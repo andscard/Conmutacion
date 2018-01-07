@@ -5,6 +5,11 @@
  */
 package microservicio;
 
+import java.util.LinkedList;
+
+
+
+
 /**
  *
  * @author RICHARD
@@ -14,9 +19,17 @@ public class Microservicio {
     /**
      * @param args the command line arguments
      */
+    
+    
     public static void main(String[] args) {
-        // hola
         
+        Conexion con=new Conexion();
+        LinkedList<Noticia> lista=con.obtener();
+        
+        for(Noticia noticia: lista){
+                System.out.println(noticia);
+         }
     }
+        
     
 }
