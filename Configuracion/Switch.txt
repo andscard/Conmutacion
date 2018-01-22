@@ -1,0 +1,18 @@
+enable
+configure terminal
+vlan 100
+valn 200
+vlan 300
+exit
+inter f0/1
+switchport mode trunk
+switchport trunk allowed vlan 100,200,300
+inter f0/2
+switchport mode access
+switchport access vlan 100
+inter f0/3
+switchport mode access
+switchport access vlan 200
+inter f0/4
+switchport mode access 
+switchport access vlan 300

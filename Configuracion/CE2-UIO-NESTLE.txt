@@ -1,0 +1,20 @@
+enable
+config t
+hostname CE2-UIO-NESTLE
+interface FastEthernet0/0
+description HACIA-SW2-PE2-UIO
+ip address 10.20.10.2 255.255.255.252
+no shutdown
+interface FastEthernet0/1
+description LAN
+ip address 192.168.2.1 255.255.255.0
+no shutdown
+exit
+
+router eigrp 10
+network 10.20.10.0
+network 192.168.2.0
+no auto-summary
+exit
+do wr
+

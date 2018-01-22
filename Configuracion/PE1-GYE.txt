@@ -1,0 +1,133 @@
+enable
+config t
+hostname PE1-GYE
+interface Loopback0
+ip address 2.2.2.2 255.255.255.255
+interface s0/2/0
+description HACIA-P-TELCO
+ip address 10.255.255.2 255.255.255.252
+no shutdown
+mpls ip
+exit
+
+
+router ospf 1
+network 2.2.2.2 0.0.0.0 area 0
+network 10.255.255.0 0.0.0.3 area 0
+exit
+
+
+router bgp 1
+neighbor 3.3.3.3 remote-as 1
+neighbor 3.3.3.3 update-source Loopback0
+neighbor 3.3.3.3 next-hop-self
+no auto-summary
+exit
+
+
+ip cef
+mpls label protocol ldp
+mpls ldp router-id Loopback0
+mpls ip
+
+
+router bgp 1
+address-family vpnv4
+neighbor 3.3.3.3 activate
+neighbor 3.3.3.3 send-community extended
+exit-address-family
+
+
+
+ip vrf CE-NESTLE
+rd 1:100
+route-target export 1:100
+route-target import 1:100
+
+
+ip vrf CE-HONESA
+rd 1:200
+route-target export 1:200
+route-target import 1:200
+
+ip vrf admin
+rd 1:300
+route-target export 1:100
+route-target import 1:100
+route-target export 1:200
+route-target import 1:200
+route-target export 1:300
+route-target import 1:300
+
+interface f0/0
+no shutdown
+interface f0/0.100
+description HACIA-SW1-CE-GYE-NESTLE
+encapsulation dot1Q 100
+ip vrf forwarding CE-NESTLE
+ip address 10.10.10.1 255.255.255.252
+exit
+interface f0/0.200
+description HACIA-SW1-CE-GYE-HONESA
+encapsulation dot1Q 200
+ip vrf forwarding CE-HONESA
+ip address 10.10.10.5 255.255.255.252
+exit
+
+interface f0/0.300
+description ADMIN
+encapsulation dot1Q 300
+ip vrf forwarding admin
+ip address 10.10.10.9 255.255.255.252
+exit
+
+router eigrp 1
+address-family ipv4 vrf CE-NESTLE
+network 10.10.10.0
+no auto-summary
+redistribute bgp 1
+default-metric 100000 1 255 1 1500
+autonomous-system 10
+exit-address-family
+
+address-family ipv4 vrf CE-HONESA
+network 10.10.10.0
+no auto-summary
+redistribute bgp 1
+default-metric 100000 1 255 1 1500
+autonomous-system 10
+exit-address-family
+
+address-family ipv4 vrf admin
+network 10.10.10.0
+no auto-summary
+redistribute bgp 1
+default-metric 100000 1 255 1 1500
+autonomous-system 10
+exit-address-family
+exit
+
+
+router bgp 1
+address-family ipv4 vrf CE-NESTLE
+redistribute eigrp 10
+exit-address-family
+exit
+router bgp 1
+address-family ipv4 vrf CE-HONESA
+redistribute eigrp 10
+exit-address-family
+exit
+router bgp 1
+address-family ipv4 vrf admin
+redistribute eigrp 10
+exit-address-family
+exit
+
+do wr
+
+
+
+
+
+

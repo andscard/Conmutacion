@@ -1,0 +1,29 @@
+enable
+config t
+hostname P-TELCO
+interface Loopback0
+ip address 1.1.1.1 255.255.255.255
+
+interface s0/2/0
+description HACIA-PE1-GYE
+ip address 10.255.255.1 255.255.255.252
+clockrate 64000
+no shutdown
+mpls ip
+
+interface s0/2/1
+description HACIA-PE2-UIO
+ip address 10.255.255.5 255.255.255.252
+clockrate 64000
+no shutdown
+mpls ip
+
+router ospf 1
+network 1.1.1.1 0.0.0.0 area 0
+network 10.255.255.0 0.0.0.7 area 0
+exit
+
+ip cef
+mpls label protocol ldp
+mpls ldp router-id Loopback0
+mpls ip
